@@ -1,1 +1,0 @@
-# Deep-fake-image-detection-web
