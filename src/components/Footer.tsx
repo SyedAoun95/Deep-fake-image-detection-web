@@ -44,13 +44,13 @@ const Footer = () => {
           >
             <h3 className="font-orbitron text-lg font-semibold text-white">Connect</h3>
             <div className="flex space-x-4">
-              <a href="https://github.com/sumiitttt11" target="_blank" className="text-gray-400 hover:text-neon-purple transition-colors">
+              <a href="https://github.com/SyedAoun95" target="_blank" className="text-gray-400 hover:text-neon-purple transition-colors">
                 <Github size={20} />
               </a>
-              <a href="https://x.com/sumiitttt11" target="_blank" className="text-gray-400 hover:text-neon-purple transition-colors">
+              <a href="#" target="_blank" className="text-gray-400 hover:text-neon-purple transition-colors">
                 <Twitter size={20} />
               </a>
-              <a href="https://www.linkedin.com/in/sumiitttt11/" target="_blank" className="text-gray-400 hover:text-neon-purple transition-colors">
+              <a href="https://www.linkedin.com/in/syed-aoun-naqvi-689b96275/" target="_blank" className="text-gray-400 hover:text-neon-purple transition-colors">
                 <Linkedin size={20} />
               </a>
             </div>
