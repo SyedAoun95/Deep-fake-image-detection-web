@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -6,6 +5,7 @@ import { cn } from "@/lib/utils";
 const NavBar = () => {
   const [activeSection, setActiveSection] = useState("hero");
   const [scrolled, setScrolled] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -45,6 +45,7 @@ const NavBar = () => {
         top: section.offsetTop - 80,
         behavior: "smooth",
       });
+      setIsMobileMenuOpen(false); // Close mobile menu after clicking
     }
   };
 
@@ -77,7 +78,6 @@ const NavBar = () => {
           >
             <span className="text-neon-purple">Deepfake</span> Detector
           </a>
-
         </motion.div>
         
         <div className="hidden md:flex space-x-6">
@@ -108,13 +108,44 @@ const NavBar = () => {
         </div>
         
         <div className="md:hidden">
-          <button className="text-white">
+          <button 
+            className="text-white"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
         </div>
       </div>
+
+      {isMobileMenuOpen && (
+        <motion.div
+          className="md:hidden bg-gray-900 bg-opacity-95 py-4"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          transition={{ duration: 0.3 }}
+        >
+          <div className="container mx-auto px-4 flex flex-col space-y-4">
+            {navItems.map((item) => (
+              <motion.button
+                key={item.id}
+                onClick={() => scrollToSection(item.id)}
+                className={cn(
+                  "text-sm font-medium transition-colors text-left",
+                  activeSection === item.id 
+                    ? "text-white" 
+                    : "text-slate-400 hover:text-white"
+                )}
+                whileHover={{ scale: 1.05 }}
+              >
+                {item.label}
+              </motion.button>
+            ))}
+          </div>
+        </motion.div>
+      )}
     </motion.nav>
   );
 };
