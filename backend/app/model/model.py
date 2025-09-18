@@ -1,19 +1,3 @@
-# import tensorflow as tf
-# # from keras.models import load_model
-# from tensorflow.keras.models import load_model
-
-
-# # Enable eager execution
-# tf.compat.v1.enable_eager_execution()
-
-# class DeepfakeModel:
-#     def __init__(self):
-#         self.model = load_model("app/model/efficientnet_deepfake.h5")
-
-
-#     def predict(self, image_array):
-#         prediction = self.model.predict(image_array)
-#         return int(prediction[0][0] > 0.5)
 import tensorflow as tf
 from tensorflow.keras.models import load_model
 from app.config import MODEL_PATH
@@ -29,6 +13,10 @@ class DeepfakeModel:
     def predict(self, image_array):
         try:
             prediction = self.model.predict(image_array, verbose=0)
-            return int(prediction[0][0] > 0.5)
+            print(f"[INFO] Prediction raw output: {prediction}")
+            threshold = 0.95  # ← Adjusted threshold
+            result = int(prediction[0][0] > threshold)
+            print(f"[INFO] Prediction result: {'Deepfake' if result else 'Authentic'}")
+            return result
         except Exception as e:
             raise Exception(f"Prediction error: {str(e)}")
