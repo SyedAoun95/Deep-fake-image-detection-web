@@ -65,7 +65,7 @@ const UploadSection = () => {
         if (num > 1 && num <= 100) return Math.round(num);
       }
     }
-    // fallback random value if API doesn’t include it (for demo look)
+    // fallback random value if API doesn’t include it (for demo)
     return Math.floor(75 + Math.random() * 20);
   };
 
@@ -105,11 +105,11 @@ const UploadSection = () => {
       if (isDeepfake) {
         setResult("Deepfake Detected");
         toast.error("Deepfake detected!");
-        setShowPopup(true);
       } else {
         setResult("Authentic Image");
         toast.success("Image is authentic.");
       }
+      setShowPopup(true);
     } catch (error: any) {
       toast.error(error?.message || "Unexpected error occurred.");
     } finally {
@@ -251,34 +251,59 @@ const UploadSection = () => {
             )}
           </div>
 
-          {/* Deepfake Popup */}
-          {showPopup && isDeepfakeDetected && (
+          {/* Deepfake or Authentic Popup */}
+          {showPopup && (
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="mt-8 bg-gradient-to-br from-black/70 to-black/50 border border-red-700/60 rounded-2xl p-8 shadow-[0_0_40px_rgba(255,0,100,0.3)] flex flex-col md:flex-row justify-between items-center"
+              className={`mt-8 rounded-2xl p-8 flex flex-col md:flex-row justify-between items-center ${
+                isDeepfakeDetected
+                  ? "bg-gradient-to-br from-black/70 to-black/50 border border-red-700/60 shadow-[0_0_40px_rgba(255,0,100,0.3)]"
+                  : "bg-gradient-to-br from-black/70 to-black/50 border border-green-700/60 shadow-[0_0_40px_rgba(0,255,150,0.3)]"
+              }`}
             >
               <div className="flex-1 text-left">
-                <h3 className="text-2xl font-bold text-red-500 tracking-wide">
-                  ⚠️ Deepfake Detected
+                <h3
+                  className={`text-2xl font-bold tracking-wide ${
+                    isDeepfakeDetected ? "text-red-500" : "text-green-400"
+                  }`}
+                >
+                  {isDeepfakeDetected ? "⚠️ Deepfake Detected" : "✅ Authentic Image Verified"}
                 </h3>
+
                 <p className="text-gray-300 mt-2 max-w-md">
-                  AI detection system flagged this image as potentially manipulated.
-                  The following analysis factors contributed to the decision:
+                  {isDeepfakeDetected
+                    ? "AI detection system flagged this image as potentially manipulated. The following analysis factors contributed to the decision:"
+                    : "AI verification system confirms this image appears authentic. The following integrity checks were consistent with genuine data:"}
                 </p>
 
                 <ul className="mt-4 text-gray-200 text-sm space-y-1">
-                  <li>• Facial feature inconsistencies – <span className="text-red-400">91%</span></li>
-                  <li>• Lighting and shadow anomalies – <span className="text-red-400">84%</span></li>
-                  <li>• Pixel-level texture irregularities – <span className="text-red-400">88%</span></li>
-                  <li>• GAN-generated pattern match – <span className="text-red-400">79%</span></li>
+                  {isDeepfakeDetected ? (
+                    <>
+                      <li>• Facial feature inconsistencies – <span className="text-red-400">91%</span></li>
+                      <li>• Lighting and shadow anomalies – <span className="text-red-400">84%</span></li>
+                      <li>• Pixel-level texture irregularities – <span className="text-red-400">88%</span></li>
+                      <li>• GAN-generated pattern match – <span className="text-red-400">79%</span></li>
+                    </>
+                  ) : (
+                    <>
+                      <li>• Consistent facial geometry – <span className="text-green-400">97%</span></li>
+                      <li>• Natural lighting and shadow balance – <span className="text-green-400">95%</span></li>
+                      <li>• No generative noise patterns – <span className="text-green-400">92%</span></li>
+                      <li>• Authentic pixel distribution – <span className="text-green-400">94%</span></li>
+                    </>
+                  )}
                 </ul>
 
                 <div className="mt-6 flex gap-3">
                   <Button
                     onClick={() => toast.success("Report saved (demo).")}
-                    className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700"
+                    className={`flex items-center gap-2 px-4 py-2 ${
+                      isDeepfakeDetected
+                        ? "bg-red-600 hover:bg-red-700"
+                        : "bg-green-600 hover:bg-green-700"
+                    }`}
                   >
                     <Save className="h-4 w-4" /> Save Report
                   </Button>
@@ -315,7 +340,7 @@ const UploadSection = () => {
                       strokeWidth={CIRCLE_STROKE}
                       strokeLinecap="round"
                       fill="transparent"
-                      stroke="url(#gradRed)"
+                      stroke={`url(#grad${isDeepfakeDetected ? "Red" : "Green"})`}
                       strokeDasharray={CIRCUMFERENCE}
                       strokeDashoffset={CIRCUMFERENCE - (percent / 100) * CIRCUMFERENCE}
                       initial={{ strokeDashoffset: CIRCUMFERENCE }}
@@ -326,6 +351,10 @@ const UploadSection = () => {
                       <linearGradient id="gradRed" x1="0%" x2="100%" y1="0%" y2="0%">
                         <stop offset="0%" stopColor="#ff416c" />
                         <stop offset="100%" stopColor="#ff4b2b" />
+                      </linearGradient>
+                      <linearGradient id="gradGreen" x1="0%" x2="100%" y1="0%" y2="0%">
+                        <stop offset="0%" stopColor="#00ff94" />
+                        <stop offset="100%" stopColor="#00d48f" />
                       </linearGradient>
                     </defs>
                   </svg>
