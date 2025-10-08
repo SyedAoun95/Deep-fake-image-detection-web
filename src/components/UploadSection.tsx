@@ -57,24 +57,23 @@ const UploadSection = () => {
     formData.append("file", imageFile);
 
     try {
-      const response = await fetch("http://localhost:8000/predict", {
+      const response = await fetch("http://127.0.0.1:8000/predict", {
         method: "POST",
         body: formData,
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.detail || "Failed to analyze image");
+        const text = await response.text();
+        throw new Error(`Server error (${response.status}): ${text}`);
       }
 
       const data = await response.json();
       const isDeepfake = data.prediction === 1;
       setResult(isDeepfake ? "Deepfake Detected" : "Authentic Image");
-      toast.success(
-        isDeepfake ? "Deepfake detected!" : "Image is authentic."
-      );
+      toast.success(isDeepfake ? "Deepfake detected!" : "Image is authentic.");
     } catch (error: any) {
-      toast.error(error.message || "Error analyzing the image.");
+      console.error("Error analyzing image:", error);
+      toast.error(error.message || "Unexpected error occurred.");
     } finally {
       setIsLoading(false);
     }
@@ -107,7 +106,6 @@ const UploadSection = () => {
 
         <div className="max-w-3xl mx-auto">
           <div className="grid md:grid-cols-2 gap-8">
-            {/* Upload Box */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -139,7 +137,6 @@ const UploadSection = () => {
               </div>
             </motion.div>
 
-            {/* Preview Area */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -207,7 +204,6 @@ const UploadSection = () => {
             </motion.div>
           </div>
 
-          {/* Analyze Button */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}

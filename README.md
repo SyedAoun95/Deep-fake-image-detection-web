@@ -40,3 +40,5 @@ npm install
 
 # 4. Start the development server
 npm run dev
+#5 backend run command
+uvicorn main:app --reload
