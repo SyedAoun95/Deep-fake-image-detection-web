@@ -1,62 +1,3 @@
-# from fastapi import APIRouter, File, UploadFile, HTTPException
-# from fastapi.responses import JSONResponse
-# from app.utils.image_utils import preprocess_image
-# from app.model.model import DeepfakeModel
-# from app.config import ALLOWED_EXTENSIONS
-# import os
-# import uuid
-# from PIL import Image
-# import io
-
-# router = APIRouter(prefix="/predict", tags=["predict"])
-# model = DeepfakeModel()
-
-# @router.post("/")
-# async def predict_image(file: UploadFile = File(...)):
-#     filename = file.filename or ""
-#     extension = filename.rsplit(".", 1)[-1].lower() if "." in filename else ""
-#     if extension not in ALLOWED_EXTENSIONS:
-#         raise HTTPException(
-#             status_code=400,
-#             detail=f"File type '{extension}' not allowed. Please upload a .jpg, .jpeg, or .png"
-#         )
-
-#     unique_filename = f"{uuid.uuid4()}.{extension}"
-#     file_path = os.path.join("temp", unique_filename)
-#     os.makedirs("temp", exist_ok=True)
-
-#     try:
-#         image_data = await file.read()
-
-#         # Validate image
-#         image = Image.open(io.BytesIO(image_data))
-#         image.verify()
-#         image.close()
-
-#         # Save temporarily
-#         with open(file_path, "wb") as buffer:
-#             buffer.write(image_data)
-#         print(f"[INFO] Saved uploaded file to {file_path}")
-
-#         # Preprocess and predict
-#         image_array = preprocess_image(file_path)
-#         result = model.predict(image_array)  # 0 or 1
-#         print(f"[INFO] Prediction result: {'Deepfake' if result == 1 else 'Authentic'}")
-
-#         # Return as integer, not boolean
-#         return JSONResponse(content={"prediction": result})
-
-#     except Exception as e:
-#         print(f"[ERROR] Prediction failed: {str(e)}")
-#         raise HTTPException(status_code=400, detail=f"Error processing image: {str(e)}")
-
-#     finally:
-#         if os.path.exists(file_path):
-#             try:
-#                 os.remove(file_path)
-#                 print(f"[INFO] Temp file {file_path} deleted.")
-#             except Exception as e:
-#                 print(f"[ERROR] Failed to delete temp file {file_path}: {str(e)}")
 from fastapi import APIRouter, File, UploadFile, HTTPException
 from fastapi.responses import JSONResponse
 from app.utils.image_utils import preprocess_image
@@ -87,28 +28,23 @@ async def predict_image(file: UploadFile = File(...)):
     try:
         image_data = await file.read()
 
-        # ✅ Validate image
+        # Validate image
         image = Image.open(io.BytesIO(image_data))
         image.verify()
         image.close()
 
-        # ✅ Save temporarily
+        # Save temporarily
         with open(file_path, "wb") as buffer:
             buffer.write(image_data)
         print(f"[INFO] Saved uploaded file to {file_path}")
 
-        # ✅ Preprocess and predict
+        # Preprocess and predict
         image_array = preprocess_image(file_path)
+        result = model.predict(image_array)  # 0 or 1
+        print(f"[INFO] Prediction result: {'Deepfake' if result == 1 else 'Authentic'}")
 
-        # 🔥 Updated line:
-        # Previously: result = model.predict(image_array)  # returned int
-        # Now: returns dict with label, confidence, precision, recall
-        result = model.predict(image_array)
-
-        print(f"[INFO] Prediction response: {result}")
-
-        # ✅ Return JSON with label, confidence, precision, recall
-        return JSONResponse(content=result)
+        # Return as integer, not boolean
+        return JSONResponse(content={"prediction": result})
 
     except Exception as e:
         print(f"[ERROR] Prediction failed: {str(e)}")
